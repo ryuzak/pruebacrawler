@@ -20,7 +20,7 @@ class Crawler(object):
 	def crawl(thread_name, url, linksToCrawl):
 		try:
 			link = urljoin(Crawler.base_url, url)
-			if (urlparse(link).netloc == 'tutorialedge.net') and (link not in Crawler.crawledLinks):
+			if (urlparse(link).netloc) and (urlparse(link).netloc == (Crawler.base_url.split('//'))[1].split('/')[0]) and (link not in Crawler.crawledLinks):
 				request = Request(link, headers={'User-Agent':'Mozilla/5.0'})
 				response = urlopen(request, context=Crawler.myssl)
 				Crawler.crawledLinks.add(link)
@@ -28,7 +28,7 @@ class Crawler(object):
 				soup = BeautifulSoup(response.read(), 'html.parser')
 				Crawler.enqueueLinks(soup.find_all('a'), linksToCrawl)
 		except URLError as e:
-			print('URL {} threw this error when trying to parse: {}'.format(link, e.reason))
+			print('URL {} threw this error when trying to parse: {}'.format(link, e))
 			Crawler.errorLinks.add(link)
 
 	@staticmethod
@@ -37,3 +37,5 @@ class Crawler(object):
 			if(urljoin(Crawler.base_url, link.get('href')) not in Crawler.crawledLinks):
 				if(urljoin(Crawler.base_url, link.get('href')) not in linksToCrawl):
 					linksToCrawl.put(link.get('href'))
+
+	
